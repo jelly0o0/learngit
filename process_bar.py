@@ -42,8 +42,15 @@ class ShowProcess(object):
         num_arrow = int(self.i * self.max_arrow / self.max_steps)
         num_line = self.max_arrow - num_arrow
         percent = self.i * 100.0 / self.max_steps
-        process_bar = '\r' + '[' + '=' * num_arrow + ' ' * num_line + ']'\
-                      + '%.2f' % percent + '%' + ' | ETA: ' + self.get_time(self.eta)
+        if num_arrow < 2:
+            process_bar = '\r' + '[' + '>' * num_arrow + ' ' * num_line + ']' \
+                          + '%.2f' % percent + '%' + ' | ETA: ' + self.get_time(self.eta)
+        elif num_arrow < self.max_arrow:
+            process_bar = '\r' + '[' + '=' * (num_arrow-1) + '>' + ' ' * num_line + ']' \
+                          + '%.2f' % percent + '%' + ' | ETA: ' + self.get_time(self.eta)
+        else:
+            process_bar = '\r' + '[' + '=' * num_arrow + ' ' * num_line + ']'\
+                          + '%.2f' % percent + '%' + ' | ETA: ' + self.get_time(self.eta)
         sys.stdout.write(process_bar)
         sys.stdout.flush()
         self.close()
@@ -55,9 +62,9 @@ class ShowProcess(object):
 
 
 if __name__ == '__main__':
-    max_steps = 10
+    max_steps = 1000
 
     process_bar = ShowProcess(max_steps)
     for i in range(max_steps):
-        time.sleep(10)
+        time.sleep(0.01)
         process_bar.show_process()
